@@ -1,0 +1,34 @@
+name: flutter_railtech
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  firebase_core: ^3.4.0
+  cloud_firestore: ^5.1.0
+  firebase_auth: ^5.1.2
+  uuid: ^4.5.0
+  intl: ^0.19.0
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - images/mrtmap.jpg
+    - images/eastwest.jpg
+    - images/northsouth.jpg
+    - images/northeast.jpg
+    - images/circle.jpg
+    - images/downtown.jpg
+    - images/thomsoneastcoast.jpg
+    - images/imagenotfound.jpg
