@@ -97,6 +97,21 @@ class _RecordpageState extends State<Recordpage> {
     );
   }
 
+  String getBookInStatus(List<Map<String, dynamic>> documents) {
+    // Check if any document has a numberOfWorkers greater than 0
+    bool isBookIn = documents.every((doc) {
+      final data = doc['data'] as Map<String, dynamic>;
+      final bool bookInStatus = data['bookIn'] ?? false;
+      return bookInStatus == false;
+    });
+
+    return isBookIn ? 'Booked Out' : 'Booked In';
+  }
+
+  Color getBookInStatusColor(String status) {
+    return status == 'Booked In' ? Colors.red : Colors.green;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,7 +181,7 @@ class _RecordpageState extends State<Recordpage> {
                 }
               },
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 40),
             const Center(
               child: Text(
                 "Workers Record (Book In/ Out)",
@@ -178,7 +193,7 @@ class _RecordpageState extends State<Recordpage> {
             ),
             const SizedBox(height: 50),
             _buildFilterButtons(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 50),
             StreamBuilder<List<Map<String, dynamic>>>(
               stream: _firestoreService.getWorkersByLine(selectedPrefix),
               builder: (context, snapshot) {
@@ -200,107 +215,139 @@ class _RecordpageState extends State<Recordpage> {
                   );
                 } else {
                   final workers = snapshot.data!;
+                  final bookInStatus = getBookInStatus(snapshot.data!);
+                  final bookInStatusColor = getBookInStatusColor(bookInStatus);
 
-                  return DataTable(
-                    columns: const [
-                      DataColumn(
-                          label: Text(
-                        'Name',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'Helmet ID',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'Intersection',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'Approve Zones',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'Book In Time',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'Book Out Time',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      )),
-                    ],
-                    rows: workers.map((doc) {
-                      final data = doc['data'] ?? {};
+                  return SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.90,
+                    child: DataTable(
+                      columns: const [
+                        DataColumn(
+                            label: Text(
+                          'Name',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'HelmetID',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'Intersection',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'Approve Zones',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'Status',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'Time-In',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                        DataColumn(
+                            label: Text(
+                          'Time-Out',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        )),
+                      ],
+                      rows: workers.map((doc) {
+                        final data = doc['data'] ?? {};
 
-                      final bookInTime =
-                          formatTimestamp(data['entryTime'] as Timestamp?);
-                      final bookOutTime =
-                          formatTimestamp(data['exitTime'] as Timestamp?);
+                        final bookInTime =
+                            formatTimestamp(data['entryTime'] as Timestamp?);
+                        final bookOutTime =
+                            formatTimestamp(data['exitTime'] as Timestamp?);
 
-                      return DataRow(
-                        cells: [
-                          DataCell(InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/workersrecord',
-                                arguments: {'workerName': doc['documentName']},
-                              );
-                            },
-                            child: Text(
-                              data['name'] ?? 'N/A',
+                        return DataRow(
+                          cells: [
+                            DataCell(InkWell(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/workersrecord',
+                                  arguments: {
+                                    'workerName': doc['documentName']
+                                  },
+                                );
+                              },
+                              child: Text(
+                                data['name'] ?? 'N/A',
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            )),
+
+                            DataCell(Text(
+                              data['helmetID'].toString(),
                               style: const TextStyle(fontSize: 15),
-                            ),
-                          )),
+                            )),
 
-                          DataCell(Text(
-                            data['helmetID'].toString(),
-                            style: const TextStyle(fontSize: 15),
-                          )),
+                            DataCell(Text(
+                              data['intersection'] != null &&
+                                      data['intersection'] is List
+                                  ? (data['intersection'] as List).join(', ')
+                                  : 'N/A',
+                              style: const TextStyle(fontSize: 15),
+                            )),
 
-                          DataCell(Text(
-                            data['intersection'] != null &&
-                                    data['intersection'] is List
-                                ? (data['intersection'] as List).join(', ')
-                                : 'N/A',
-                            style: const TextStyle(fontSize: 15),
-                          )),
+                            // Approve Zones - Join array into a comma-separated string
+                            DataCell(Text(
+                              data['approveZones'] != null &&
+                                      data['approveZones'] is List
+                                  ? (data['approveZones'] as List).join(', ')
+                                  : 'N/A',
+                              style: const TextStyle(fontSize: 15),
+                            )),
 
-                          // Approve Zones - Join array into a comma-separated string
-                          DataCell(Text(
-                            data['approveZones'] != null &&
-                                    data['approveZones'] is List
-                                ? (data['approveZones'] as List).join(', ')
-                                : 'N/A',
-                            style: const TextStyle(fontSize: 15),
-                          )),
+                            // Book In Status
+                            DataCell(Text(
+                              bookInStatus,
+                              style: TextStyle(
+                                  fontSize: 15, color: bookInStatusColor),
+                            )),
 
-                          // Book In Time - Convert Timestamp to readable date
-                          DataCell(Text(
-                            bookInTime,
-                            style: const TextStyle(fontSize: 15),
-                          )),
+                            // Book In Time - Convert Timestamp to readable date
+                            DataCell(ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 100,
+                              ),
+                              child: Text(
+                                bookInTime,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            )),
 
-                          // Book Out Time - Check if null, else convert to readable date
-                          // Book In Time - Convert Timestamp to readable date
-                          DataCell(Text(
-                            bookOutTime,
-                            style: const TextStyle(fontSize: 15),
-                          )),
-                        ],
-                      );
-                    }).toList(),
+                            // Book Out Time - Check if null, else convert to readable date
+                            // Book In Time - Convert Timestamp to readable date
+                            DataCell(ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 100,
+                              ),
+                              child: Text(
+                                bookInStatus == 'Booked In'
+                                    ? 'N/A'
+                                    : bookOutTime,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            )),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   );
                 }
               },

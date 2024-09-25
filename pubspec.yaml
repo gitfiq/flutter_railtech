@@ -12,6 +12,9 @@ dependencies:
   firebase_auth: ^5.1.2
   uuid: ^4.5.0
   intl: ^0.19.0
+  fluttertoast: ^8.2.8
+  html: ^0.15.4
+  shared_preferences: ^2.3.2
   flutter:
     sdk: flutter
 

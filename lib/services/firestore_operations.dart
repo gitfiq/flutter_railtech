@@ -180,4 +180,76 @@ class FirestoreOperations {
         .doc(helmetID)
         .get();
   }
+
+  // Fetch user data to check bookIn status
+  Future<Object?> getUserData(String email) async {
+    DocumentSnapshot snapshot = await _db.collection('Users').doc(email).get();
+    return snapshot.exists ? snapshot.data() : null;
+  }
+
+  //Saves workers book in
+  Future<void> saveWorkerData({
+    required String email,
+    required List<String> approveZones,
+    required List<String> approveIntersections,
+    required int helmetID,
+    required String name,
+  }) async {
+    try {
+      await _db.collection('Users').doc(email).set({
+        'approveZones': approveZones,
+        'helmetID': helmetID,
+        'intersection': approveIntersections,
+        'name': name,
+        'entryTime': FieldValue.serverTimestamp(),
+        'bookIn': true,
+      });
+    } catch (e) {
+      throw Exception('Failed to save worker data: $e');
+    }
+  }
+
+  //HelmetID update
+  Future<void> updateHelmetID({
+    required List<String> approveZones,
+    required List<String> approveIntersections,
+    required int helmetID,
+    required String name,
+  }) async {
+    try {
+      await _db.collection('HelmetID').doc(helmetID.toString()).set({
+        'approveZones': approveZones,
+        'intersection': approveIntersections,
+        'name': name,
+      });
+    } catch (e) {
+      throw Exception('Failed to save worker data: $e');
+    }
+  }
+
+  // Update the user's bookIn status and save record in 'Records'
+  Future<void> bookOutWorker({
+    required String email,
+    required Map<String, dynamic> userData,
+  }) async {
+    String uniqueId = _db.collection('Users').doc().id; // Generate unique ID
+    DateTime exitTime = DateTime.now(); // Current time as exit time
+
+    // Add the exitTime to userData before saving it to the 'Records' collection
+    userData['exitTime'] = exitTime;
+
+    // Save the current data in 'Records' with exitTime
+    await _db
+        .collection('Users')
+        .doc(email)
+        .collection('Records')
+        .doc(uniqueId)
+        .set(userData);
+
+    // Update bookIn to false and add exitTime to the user's document
+    await _db.collection('Users').doc(email).update({
+      'bookIn': false,
+      'exitTime': exitTime,
+    });
+  }
 }

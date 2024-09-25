@@ -364,7 +364,7 @@ class DetailpageState extends State<Detailpage> {
                           style: const TextStyle(fontSize: 15),
                         )),
                         DataCell(Text(
-                          exitTime,
+                          data['onTrack'] == true ? 'N/A' : exitTime,
                           style: const TextStyle(fontSize: 15),
                         )),
                       ]);

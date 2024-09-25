@@ -171,13 +171,13 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
                         )),
                         DataColumn(
                             label: Text(
-                          'Book In Time',
+                          'Time-In',
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         )),
                         DataColumn(
                             label: Text(
-                          'Book Out Time',
+                          'Time-Out',
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         )),
@@ -192,20 +192,9 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
 
                         return DataRow(
                           cells: [
-                            DataCell(InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/workersrecord',
-                                  arguments: {
-                                    'workerName': doc['documentName']
-                                  },
-                                );
-                              },
-                              child: Text(
-                                data['name'] ?? 'N/A',
-                                style: const TextStyle(fontSize: 15),
-                              ),
+                            DataCell(Text(
+                              data['name'] ?? 'N/A',
+                              style: const TextStyle(fontSize: 15),
                             )),
 
                             DataCell(Text(

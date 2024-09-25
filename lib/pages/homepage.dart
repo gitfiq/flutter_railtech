@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_railtech/components/alertdialog.dart';
 import 'package:flutter_railtech/components/drawer.dart';
 import 'package:flutter_railtech/components/mrt_line_button_homepage.dart';
+import 'package:flutter_railtech/services/auth_service.dart';
 import 'package:flutter_railtech/services/firestore_operations.dart';
 import 'package:flutter_railtech/services/unauthorized_alert.dart';
 import 'package:flutter_railtech/utils/utils.dart';
@@ -149,10 +150,7 @@ class HomepageState extends State<Homepage> {
             child: IconButton(
               icon: const Icon(Icons.exit_to_app),
               onPressed: () async {
-                Navigator.pushReplacementNamed(
-                  context,
-                  '/login',
-                );
+                await AuthService().signout(context: context);
               },
             ),
           ),
@@ -188,13 +186,6 @@ class HomepageState extends State<Homepage> {
                   if (alerts.isEmpty) {
                     return Container(); // No active alerts
                   } else {
-                    // final latestAlert = alerts.values.first;
-                    // return CustomAlertWidget(
-                    //   helmetID: latestAlert['helmetID'],
-                    //   intersection: latestAlert['intersection'],
-                    //   zoneName: latestAlert['zoneName'],
-                    // );
-
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),

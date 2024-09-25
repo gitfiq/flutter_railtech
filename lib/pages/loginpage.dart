@@ -43,13 +43,13 @@ class _LoginpageState extends State<Loginpage> {
                       onPressed: () {
                         Navigator.pushNamed(
                           context,
-                          '/logincredential',
+                          '/signup',
                         );
                       },
                       child: Container(
                         alignment: Alignment.center,
                         child: const Text(
-                          "User",
+                          "Sign Up",
                           style: TextStyle(color: Colors.white, fontSize: 25),
                         ),
                       ),
@@ -70,13 +70,13 @@ class _LoginpageState extends State<Loginpage> {
                       onPressed: () {
                         Navigator.pushNamed(
                           context,
-                          '/homepage',
+                          '/signin',
                         );
                       },
                       child: Container(
                         alignment: Alignment.center,
                         child: const Text(
-                          "Staff",
+                          "Sign In",
                           style: TextStyle(color: Colors.white, fontSize: 25),
                         ),
                       ),
