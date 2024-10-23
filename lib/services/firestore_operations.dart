@@ -84,6 +84,37 @@ class FirestoreOperations {
     });
   }
 
+  // Stream<List<Map<String, dynamic>>> getWorkersByLine(String? linePrefix) {
+  //   // Reference the "Users" collection
+  //   CollectionReference usersCollection = _db.collection('Users');
+
+  //   // If no linePrefix is provided (for "All" button), return all workers
+  //   if (linePrefix == null) {
+  //     return usersCollection
+  //         .orderBy('entryTime', descending: true)
+  //         .snapshots()
+  //         .map((snapshot) {
+  //       return snapshot.docs.map((doc) {
+  //         // Safeguard by checking if data is not null
+  //         return {
+  //           'documentName': doc.id,
+  //           'data': doc.data(),
+  //         };
+  //       }).toList();
+  //     });
+  //   }
+
+  //   // Filter users by line prefix in their "intersection" field
+  //   return usersCollection.orderBy('intersection').snapshots().map((snapshot) {
+  //     return snapshot.docs.map((doc) {
+  //       return {
+  //         'documentName': doc.id,
+  //         'data': doc.data(),
+  //       };
+  //     }).toList();
+  //   });
+  // }
+
   // Get a stream of worker documents filtered by MRT line prefix
   Stream<List<Map<String, dynamic>>> getWorkersByLine(String? linePrefix) {
     // Reference the "Users" collection
@@ -96,7 +127,6 @@ class FirestoreOperations {
           .snapshots()
           .map((snapshot) {
         return snapshot.docs.map((doc) {
-          // Safeguard by checking if data is not null
           return {
             'documentName': doc.id,
             'data': doc.data(),
@@ -105,9 +135,19 @@ class FirestoreOperations {
       });
     }
 
-    // Filter users by line prefix in their "intersection" field
-    return usersCollection.orderBy('intersection').snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
+    // Get the workers and filter them based on the line prefix
+    return usersCollection
+        .orderBy('entryTime', descending: true) // You can order as needed
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.where((doc) {
+        // Ensure 'intersection' is treated as a list
+        List<dynamic> intersections = doc['intersection'];
+
+        // Check if any intersection starts with the linePrefix
+        return intersections.any(
+            (intersection) => intersection.toString().startsWith(linePrefix));
+      }).map((doc) {
         return {
           'documentName': doc.id,
           'data': doc.data(),
