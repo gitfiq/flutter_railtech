@@ -9,14 +9,15 @@ class Errorpage extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          "MRT Maintanance Monitoring System",
+          "TrackSafe System",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
       ),
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       body: const Center(
         child: Text('404 - Page Not Found. Refresh The Application.',
-            style: TextStyle(fontSize: 24)),
+            style: TextStyle(fontSize: 30)),
       ),
     );
   }

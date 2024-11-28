@@ -19,7 +19,7 @@ class _SignuppageState extends State<Signuppage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -37,7 +37,7 @@ class _SignuppageState extends State<Signuppage> {
               const Text(
                 "Register Account",
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 50,
                     fontWeight: FontWeight.bold),
               ),
@@ -74,9 +74,7 @@ class _SignuppageState extends State<Signuppage> {
           const Text(
             'Email Address',
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-                fontSize: 18),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
             height: 16,
@@ -110,9 +108,7 @@ class _SignuppageState extends State<Signuppage> {
           const Text(
             'Password',
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-                fontSize: 18),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
             height: 16,
@@ -151,7 +147,7 @@ class _SignuppageState extends State<Signuppage> {
       width: MediaQuery.of(context).size.width * 0.50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xff0D6EFD),
+          backgroundColor: const Color.fromARGB(255, 2, 38, 92),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -166,7 +162,8 @@ class _SignuppageState extends State<Signuppage> {
         },
         child: const Text(
           "Register",
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -177,14 +174,12 @@ class _SignuppageState extends State<Signuppage> {
       text: TextSpan(
         text: "Already have an account? ",
         style: const TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-        ),
+            color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
         children: [
           TextSpan(
             text: "Sign In",
             style: const TextStyle(
-              color: Colors.blue,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),

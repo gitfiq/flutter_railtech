@@ -30,6 +30,7 @@ class HomepageState extends State<Homepage> {
 
   late UnauthorizedDetectionService detectionService;
   String _helmetID = '';
+  String _name = '';
   String _intersection = '';
   String _zoneName = '';
 
@@ -44,9 +45,10 @@ class HomepageState extends State<Homepage> {
     // Initialize the detection service and start monitoring
     detectionService = UnauthorizedDetectionService(
       context: context,
-      onUnauthorizedDetected: (helmetID, intersection, zoneName) {
+      onUnauthorizedDetected: (helmetID, name, intersection, zoneName) {
         setState(() {
           _helmetID = helmetID;
+          _name = name;
           _intersection = intersection;
           _zoneName = zoneName;
         });
@@ -128,16 +130,19 @@ class HomepageState extends State<Homepage> {
   }
 
   Color getStatusColor(String status) {
-    return status == 'Ready' ? Colors.green : Colors.red;
+    return status == 'Ready'
+        ? const Color.fromARGB(255, 5, 135, 9)
+        : Colors.red;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          "MRT Maintanance Monitoring System",
+          "TrackSafe System",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
@@ -173,7 +178,7 @@ class HomepageState extends State<Homepage> {
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             StreamBuilder<Map<String, dynamic>>(
               stream: detectionService.unauthorizedStream,
               builder: (context, snapshot) {
@@ -199,6 +204,7 @@ class HomepageState extends State<Homepage> {
                         // Return each alert as a CustomAlertWidget (or whatever widget you're using)
                         return CustomAlertWidget(
                           helmetID: alert['helmetID'],
+                          name: alert['name'],
                           intersection: alert['intersection'],
                           zoneName: alert['zoneName'],
                         );
@@ -210,15 +216,26 @@ class HomepageState extends State<Homepage> {
                 }
               },
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 10),
+            const Center(
+              child: Text(
+                "SMRT Map",
+                style: TextStyle(
+                  fontSize: 40,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
             Center(
               child: GestureDetector(
                 onTap: () {
                   showEnlargedImage(context, 'images/mrtmap.jpg');
                 },
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.60,
-                  width: MediaQuery.of(context).size.width * 0.45,
+                  height: MediaQuery.of(context).size.height * 0.40,
+                  width: MediaQuery.of(context).size.width * 0.25,
                   child: Container(
                       decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
@@ -234,14 +251,15 @@ class HomepageState extends State<Homepage> {
             const SizedBox(height: 20),
             const Center(
               child: Text(
-                "Singapore MRT Map",
+                "Dashboard at OCC (for Admin Staff)",
                 style: TextStyle(
                   fontSize: 30,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
             SizedBox(
               height: 60,
               child: Row(
@@ -251,43 +269,50 @@ class HomepageState extends State<Homepage> {
                       width: MediaQuery.of(context).size.width * 0.14,
                       color: Colors.green,
                       label: 'East-West Line',
-                      onPressed: () => updateText('EW-Line')),
+                      onPressed: () => updateText('EW-Line'),
+                      fontsize: 16),
                   buildRoundedButton(
                       width: MediaQuery.of(context).size.width * 0.14,
                       color: Colors.red,
                       label: 'North-South Line',
-                      onPressed: () => updateText('NS-Line')),
+                      onPressed: () => updateText('NS-Line'),
+                      fontsize: 16),
                   buildRoundedButton(
                       width: MediaQuery.of(context).size.width * 0.14,
                       color: Colors.purple,
                       label: 'North-East Line',
-                      onPressed: () => updateText('NE-Line')),
+                      onPressed: () => updateText('NE-Line'),
+                      fontsize: 16),
                   buildRoundedButton(
                       width: MediaQuery.of(context).size.width * 0.14,
                       color: Colors.orange,
                       label: 'Circle Line',
-                      onPressed: () => updateText('C-Line')),
+                      onPressed: () => updateText('C-Line'),
+                      fontsize: 16),
                   buildRoundedButton(
                       width: MediaQuery.of(context).size.width * 0.14,
-                      color: Colors.blue,
+                      color: Colors.blueAccent,
                       label: 'Downtown Line',
-                      onPressed: () => updateText('D-Line')),
+                      onPressed: () => updateText('D-Line'),
+                      fontsize: 16),
                   buildRoundedButton(
-                    width: MediaQuery.of(context).size.width * 0.14,
-                    color: Colors.brown,
-                    label: 'Thomson-East Coast Line',
-                    onPressed: () => updateText('TEC-Line'),
-                  ),
+                      width: MediaQuery.of(context).size.width * 0.14,
+                      color: Colors.brown,
+                      label: 'Thomson-East Coast Line',
+                      onPressed: () => updateText('TEC-Line'),
+                      fontsize: 16),
                 ],
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 _displayText,
-                style:
-                    const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
             const SizedBox(height: 5),
@@ -322,28 +347,36 @@ class HomepageState extends State<Homepage> {
                         columns: const [
                           DataColumn(
                             label: Text(
-                              "Station Name",
+                              "Intersection",
                               style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                           ),
                           DataColumn(
                               label: Text(
                             "Number Of People",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           )),
                           DataColumn(
                               label: Text(
                             "Status",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           )),
                           DataColumn(
                               label: Text(
                             "Last Updated",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ))
                         ],
                         rows: snapshot.data!.map((doc) {
@@ -357,8 +390,9 @@ class HomepageState extends State<Homepage> {
                           final int numOfPeople = data['numberOfWorkers'] ?? 0;
                           final String statusText =
                               numOfPeople > 0 ? 'Not Ready' : 'Ready';
-                          final Color statusColor =
-                              numOfPeople > 0 ? Colors.red : Colors.green;
+                          final Color statusColor = numOfPeople > 0
+                              ? Colors.red
+                              : const Color.fromARGB(255, 5, 135, 9);
 
                           return DataRow(cells: [
                             DataCell(InkWell(
@@ -373,25 +407,28 @@ class HomepageState extends State<Homepage> {
                               },
                               child: Text(
                                 removePrefix(doc['documentName']),
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
                               ),
                             )), // Document ID
                             DataCell(Text(
                               numOfPeople.toString(),
-                              style: const TextStyle(fontSize: 15),
+                              style: const TextStyle(
+                                  fontSize: 18, color: Colors.white),
                             )),
                             DataCell(
                               Text(
                                 statusText,
                                 style: TextStyle(
                                   color: statusColor,
-                                  fontSize: 15,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
                             DataCell(Text(
                               formattedDate,
-                              style: const TextStyle(fontSize: 15),
+                              style: const TextStyle(
+                                  fontSize: 18, color: Colors.white),
                             )),
                           ]);
                         }).toList(),

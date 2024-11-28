@@ -19,7 +19,7 @@ class _SigninpageState extends State<Signinpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -37,7 +37,7 @@ class _SigninpageState extends State<Signinpage> {
               const Text(
                 "Sign In ",
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 50,
                     fontWeight: FontWeight.bold),
               ),
@@ -74,9 +74,7 @@ class _SigninpageState extends State<Signinpage> {
           const Text(
             'Email Address',
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-                fontSize: 18),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
             height: 16,
@@ -110,9 +108,7 @@ class _SigninpageState extends State<Signinpage> {
           const Text(
             'Password',
             style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-                fontSize: 18),
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
           const SizedBox(
             height: 16,
@@ -151,7 +147,7 @@ class _SigninpageState extends State<Signinpage> {
       width: MediaQuery.of(context).size.width * 0.50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xff0D6EFD),
+          backgroundColor: const Color.fromARGB(255, 2, 38, 92),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -166,7 +162,8 @@ class _SigninpageState extends State<Signinpage> {
         },
         child: const Text(
           "Sign In",
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -179,12 +176,13 @@ class _SigninpageState extends State<Signinpage> {
         style: const TextStyle(
           color: Colors.black,
           fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
         children: [
           TextSpan(
             text: "Sign up",
             style: const TextStyle(
-              color: Colors.blue,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),

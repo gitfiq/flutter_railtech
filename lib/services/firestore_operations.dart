@@ -63,7 +63,27 @@ class FirestoreOperations {
     });
   }
 
-  // Get users detected based on selected zone and track status
+  // // Get users detected based on selected zone and track status
+  // Stream<List<Map<String, dynamic>>> getUsersDetected(
+  //     String stationName, String selectedZone, bool onTrack) {
+  //   return _db
+  //       .collection('EW-Line')
+  //       .doc(stationName)
+  //       .collection('zones')
+  //       .doc(selectedZone)
+  //       .collection('Users Detected')
+  //       .where('onTrack', isEqualTo: onTrack)
+  //       .snapshots()
+  //       .map((snapshot) {
+  //     return snapshot.docs.map((doc) {
+  //       return {
+  //         'documentName': doc.id,
+  //         'data': doc.data(),
+  //       };
+  //     }).toList();
+  //   });
+  // }
+
   Stream<List<Map<String, dynamic>>> getUsersDetected(
       String stationName, String selectedZone, bool onTrack) {
     return _db
@@ -74,46 +94,25 @@ class FirestoreOperations {
         .collection('Users Detected')
         .where('onTrack', isEqualTo: onTrack)
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
+        .asyncMap((snapshot) async {
+      // Map the documents and fetch corresponding names from HelmetID collection
+      final usersDetected = await Future.wait(snapshot.docs.map((doc) async {
+        // Fetch the Helmet ID
+        final helmetID = doc.id;
+
+        // Fetch the name from HelmetID collection
+        final nameDoc = await _db.collection('HelmetID').doc(helmetID).get();
+
         return {
-          'documentName': doc.id,
-          'data': doc.data(),
+          'documentName': helmetID, // Helmet ID as documentName
+          'data': doc.data(), // Original data from Users Detected
+          'name': nameDoc.data()?['name'], // Extracted name field
         };
-      }).toList();
+      }).toList());
+
+      return usersDetected;
     });
   }
-
-  // Stream<List<Map<String, dynamic>>> getWorkersByLine(String? linePrefix) {
-  //   // Reference the "Users" collection
-  //   CollectionReference usersCollection = _db.collection('Users');
-
-  //   // If no linePrefix is provided (for "All" button), return all workers
-  //   if (linePrefix == null) {
-  //     return usersCollection
-  //         .orderBy('entryTime', descending: true)
-  //         .snapshots()
-  //         .map((snapshot) {
-  //       return snapshot.docs.map((doc) {
-  //         // Safeguard by checking if data is not null
-  //         return {
-  //           'documentName': doc.id,
-  //           'data': doc.data(),
-  //         };
-  //       }).toList();
-  //     });
-  //   }
-
-  //   // Filter users by line prefix in their "intersection" field
-  //   return usersCollection.orderBy('intersection').snapshots().map((snapshot) {
-  //     return snapshot.docs.map((doc) {
-  //       return {
-  //         'documentName': doc.id,
-  //         'data': doc.data(),
-  //       };
-  //     }).toList();
-  //   });
-  // }
 
   // Get a stream of worker documents filtered by MRT line prefix
   Stream<List<Map<String, dynamic>>> getWorkersByLine(String? linePrefix) {

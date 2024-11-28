@@ -184,10 +184,11 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          "Worker Entry Form",
+          "Personnel Entry Form",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
@@ -225,30 +226,46 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(height: 50),
-          Text('Worker Name: ${workerData!['name']}'),
           const SizedBox(height: 30),
-          Text('Helmet ID: ${workerData!['helmetID']}'),
-          const SizedBox(height: 30),
-          Text('Entry Time: ${formatTimestamp(workerData!['entryTime'])}'),
-          const SizedBox(height: 30),
+          Text(
+            'Personnel Name: ${workerData!['name']}',
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Helmet ID: ${workerData!['helmetID']}',
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Entry Time: ${formatTimestamp(workerData!['entryTime'])}',
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          const SizedBox(height: 20),
 
           // Display intersections in a table
           if (workerData!['intersection'] != null &&
               (workerData!['intersection'] as List).isNotEmpty)
             Column(
               children: [
-                const Text('Intersections:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
                 DataTable(
                   columns: const [
-                    DataColumn(label: Text('Intersection')),
+                    DataColumn(
+                      label: Text(
+                        'Intersection',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
                   ],
                   rows: (workerData!['intersection'] as List<dynamic>)
                       .map((intersection) {
                     return DataRow(cells: [
-                      DataCell(Text(intersection as String)),
+                      DataCell(Text(
+                        intersection as String,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
+                      )),
                     ]);
                   }).toList(),
                 ),
@@ -261,17 +278,23 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
               (workerData!['approveZones'] as List).isNotEmpty)
             Column(
               children: [
-                const Text('Zones:',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
                 DataTable(
                   columns: const [
-                    DataColumn(label: Text('Zone')),
+                    DataColumn(
+                      label: Text(
+                        'Zone',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
                   ],
                   rows: (workerData!['approveZones'] as List<dynamic>)
                       .map((zone) {
                     return DataRow(cells: [
-                      DataCell(Text(zone as String)),
+                      DataCell(Text(
+                        zone as String,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 18),
+                      )),
                     ]);
                   }).toList(),
                 ),
@@ -293,7 +316,10 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
               ),
               onPressed: bookOut,
               child: const Text('Book Out',
-                  style: TextStyle(color: Colors.white, fontSize: 15)),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -307,10 +333,16 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 100),
+          const SizedBox(height: 30),
           // First dropdown for lines
           DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Select Line'),
+            decoration: const InputDecoration(
+              labelText: 'Select Line',
+              labelStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
             value: selectedLine,
             items: lines.map((line) {
               return DropdownMenuItem(
@@ -342,7 +374,13 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
 
           // Second dropdown for stations
           DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Select Intersection'),
+            decoration: const InputDecoration(
+              labelText: 'Select Intersection',
+              labelStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
             value: selectedIntersection,
             items: intersections.map((intersection) {
               return DropdownMenuItem(
@@ -376,10 +414,10 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
           Center(
             child: SizedBox(
               height: 50,
-              width: MediaQuery.of(context).size.width * 0.15,
+              width: 350,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey,
+                  backgroundColor: const Color.fromARGB(255, 129, 196, 229),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -419,7 +457,13 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
 
           // Third dropdown for zones
           DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Select Zone'),
+            decoration: const InputDecoration(
+              labelText: 'Select Zone',
+              labelStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
             value: selectedZone,
             items: zones.map((zone) {
               return DropdownMenuItem(
@@ -441,10 +485,10 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
           Center(
             child: SizedBox(
               height: 50,
-              width: MediaQuery.of(context).size.width * 0.15,
+              width: 350,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey,
+                  backgroundColor: const Color.fromARGB(255, 129, 196, 229),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -481,7 +525,10 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
 
           // Input field for helmet ID
           TextFormField(
-            decoration: const InputDecoration(labelText: 'Helmet ID'),
+            decoration: const InputDecoration(
+              labelText: 'Helmet ID',
+              labelStyle: TextStyle(color: Colors.white, fontSize: 20),
+            ),
             onSaved: (value) => helmetID = value,
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -494,11 +541,17 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
 
           // Input field for worker name
           TextFormField(
-            decoration: const InputDecoration(labelText: 'Worker Name'),
+            decoration: const InputDecoration(
+              labelText: 'Personnel Name',
+              labelStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
             onSaved: (value) => workerName = value,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter Worker Name';
+                return 'Please enter your name';
               }
               return null;
             },
@@ -509,7 +562,7 @@ class _LogincredentialpageState extends State<Logincredentialpage> {
           Center(
             child: SizedBox(
               height: 50,
-              width: MediaQuery.of(context).size.width * 0.15,
+              width: 170,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,

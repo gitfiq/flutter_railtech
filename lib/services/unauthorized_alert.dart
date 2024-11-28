@@ -13,7 +13,7 @@ class UnauthorizedDetectionService {
   StreamSubscription? _subscription;
 
   final BuildContext context;
-  final Function(String, String, String) onUnauthorizedDetected;
+  final Function(String, String, String, String) onUnauthorizedDetected;
 
   UnauthorizedDetectionService({
     required this.context,
@@ -40,15 +40,17 @@ class UnauthorizedDetectionService {
         // Fetch worker details asynchronously
         final workerDoc = await _firestoreService.getWorkerDetails(helmetID);
         final approvedZones = List<String>.from(workerDoc['approveZones']);
+        final name = workerDoc['name'];
 
         if (!isZoneAuthorized(detectedZone, approvedZones)) {
           final alertId = const Uuid().v4();
           currentAlerts[alertId] = {
             'helmetID': helmetID,
+            'name': name,
             'intersection': intersection,
             'zoneName': detectedZone,
           };
-          onUnauthorizedDetected(helmetID, intersection, detectedZone);
+          onUnauthorizedDetected(helmetID, name, intersection, detectedZone);
         }
 
         // _firestoreService.getWorkerDetails(helmetID).then((workerDoc) {

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class CustomAlertWidget extends StatelessWidget {
   final String helmetID;
+  final String name;
   final String intersection;
   final String zoneName;
 
   const CustomAlertWidget({
     super.key,
     required this.helmetID,
+    required this.name,
     required this.intersection,
     required this.zoneName,
   });
@@ -29,10 +31,13 @@ class CustomAlertWidget extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        title: const Text('Unauthorized Entry Detected'),
+        title: const Text(
+          'ALERT POPUP (Unauthorized Entry Detected)',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
         subtitle: Text(
-          'Helmet ID: $helmetID\nIntersection: $intersection\nZone: $zoneName',
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          'Helmet ID: $helmetID\nName: $name\nIntersection: $intersection\nZone: $zoneName',
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
         tileColor: Colors.red[100],
       ),

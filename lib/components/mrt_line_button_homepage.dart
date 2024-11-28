@@ -7,6 +7,7 @@ Widget buildRoundedButton({
   required Color color,
   required String label,
   required VoidCallback onPressed,
+  required double fontsize,
 }) {
   return SizedBox(
     width: width,
@@ -21,11 +22,16 @@ Widget buildRoundedButton({
       onPressed: () {
         onPressed();
       },
-      child: Container(
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+      child: Center(
+        child: Container(
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: fontsize,
+                fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     ),

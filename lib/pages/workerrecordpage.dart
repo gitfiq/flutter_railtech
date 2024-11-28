@@ -23,6 +23,7 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
 
   late UnauthorizedDetectionService detectionService;
   String _helmetID = '';
+  String _name = '';
   String _intersection = '';
   String _zoneName = '';
 
@@ -34,9 +35,10 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
     // Initialize the detection service and start monitoring
     detectionService = UnauthorizedDetectionService(
       context: context,
-      onUnauthorizedDetected: (helmetID, intersection, zoneName) {
+      onUnauthorizedDetected: (helmetID, name, intersection, zoneName) {
         setState(() {
           _helmetID = helmetID;
+          _name = name;
           _intersection = intersection;
           _zoneName = zoneName;
         });
@@ -63,10 +65,11 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          "MRT Maintanance Monitoring System",
+          "TrackSafe System",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
@@ -74,171 +77,209 @@ class _WorkerrecordpageState extends State<Workerrecordpage> {
           color: Colors.white,
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 60),
-          StreamBuilder<Map<String, dynamic>>(
-            stream: detectionService.unauthorizedStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (snapshot.hasData) {
-                final alerts = snapshot.data!;
-                if (alerts.isEmpty) {
-                  return Container(); // No active alerts
-                } else {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: alerts.length,
-                    itemBuilder: (context, index) {
-                      final alertKey = alerts.keys
-                          .elementAt(index); // Get the unique ID for each alert
-                      final alert =
-                          alerts[alertKey]!; // Access the corresponding alert
-
-                      // Return each alert as a CustomAlertWidget (or whatever widget you're using)
-                      return CustomAlertWidget(
-                        helmetID: alert['helmetID'],
-                        intersection: alert['intersection'],
-                        zoneName: alert['zoneName'],
-                      );
-                    },
-                  );
-                }
-              } else {
-                return Container();
-              }
-            },
-          ),
-          const SizedBox(height: 60),
-          Center(
-            child: Text(
-              "${widget.workerName} Records",
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 50),
-          StreamBuilder<List<Map<String, dynamic>>>(
-              stream: _firestoreService.getWorkerRecords(widget.workerName),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 30),
+            StreamBuilder<Map<String, dynamic>>(
+              stream: detectionService.unauthorizedStream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No records available',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                  );
-                } else {
-                  final records = snapshot.data!;
+                } else if (snapshot.hasData) {
+                  final alerts = snapshot.data!;
+                  if (alerts.isEmpty) {
+                    return Container(); // No active alerts
+                  } else {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: alerts.length,
+                      itemBuilder: (context, index) {
+                        final alertKey = alerts.keys.elementAt(
+                            index); // Get the unique ID for each alert
+                        final alert =
+                            alerts[alertKey]!; // Access the corresponding alert
 
-                  return SingleChildScrollView(
-                    child: DataTable(
-                      columns: const [
-                        DataColumn(
-                            label: Text(
-                          'Name',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                        DataColumn(
-                            label: Text(
-                          'Helmet ID',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                        DataColumn(
-                            label: Text(
-                          'Intersection',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                        DataColumn(
-                            label: Text(
-                          'Approve Zones',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                        DataColumn(
-                            label: Text(
-                          'Time-In',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                        DataColumn(
-                            label: Text(
-                          'Time-Out',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        )),
-                      ],
-                      rows: records.map((doc) {
-                        final data = doc['data'] ?? {};
-
-                        final bookInTime =
-                            formatTimestamp(data['entryTime'] as Timestamp?);
-                        final bookOutTime =
-                            formatTimestamp(data['exitTime'] as Timestamp?);
-
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(
-                              data['name'] ?? 'N/A',
-                              style: const TextStyle(fontSize: 15),
-                            )),
-
-                            DataCell(Text(
-                              data['helmetID'].toString(),
-                              style: const TextStyle(fontSize: 15),
-                            )),
-
-                            // Approve Zones - Join array into a comma-separated string
-                            DataCell(Text(
-                              data['intersection'] != null &&
-                                      data['intersection'] is List
-                                  ? (data['intersection'] as List).join(', ')
-                                  : 'N/A',
-                              style: const TextStyle(fontSize: 15),
-                            )),
-
-                            // Approve Zones - Join array into a comma-separated string
-                            DataCell(Text(
-                              data['approveZones'] != null &&
-                                      data['approveZones'] is List
-                                  ? (data['approveZones'] as List).join(', ')
-                                  : 'N/A',
-                              style: const TextStyle(fontSize: 15),
-                            )),
-
-                            // Book In Time - Convert Timestamp to readable date
-                            DataCell(Text(
-                              bookInTime,
-                              style: const TextStyle(fontSize: 15),
-                            )),
-
-                            // Book Out Time - Check if null, else convert to readable date
-                            DataCell(Text(
-                              bookOutTime,
-                              style: const TextStyle(fontSize: 15),
-                            )),
-                          ],
+                        // Return each alert as a CustomAlertWidget (or whatever widget you're using)
+                        return CustomAlertWidget(
+                          helmetID: alert['helmetID'],
+                          name: alert['name'],
+                          intersection: alert['intersection'],
+                          zoneName: alert['zoneName'],
                         );
-                      }).toList(),
-                    ),
-                  );
+                      },
+                    );
+                  }
+                } else {
+                  return Container();
                 }
-              }),
-        ],
+              },
+            ),
+            const SizedBox(height: 40),
+            const Center(
+              child: Text(
+                "Personnel Record History",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                "Personnel Email: ${widget.workerName}",
+                style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 30),
+            StreamBuilder<List<Map<String, dynamic>>>(
+                stream: _firestoreService.getWorkerRecords(widget.workerName),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No records available',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  } else {
+                    final records = snapshot.data!;
+
+                    return SingleChildScrollView(
+                      child: DataTable(
+                        columns: const [
+                          DataColumn(
+                              label: Text(
+                            'Personnel',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Helmet ID',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Intersection',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Approved Zones',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Time-In',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                          DataColumn(
+                              label: Text(
+                            'Time-Out',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )),
+                        ],
+                        rows: records.map((doc) {
+                          final data = doc['data'] ?? {};
+
+                          final bookInTime =
+                              formatTimestamp(data['entryTime'] as Timestamp?);
+                          final bookOutTime =
+                              formatTimestamp(data['exitTime'] as Timestamp?);
+
+                          return DataRow(
+                            cells: [
+                              DataCell(Text(
+                                data['name'] ?? 'N/A',
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              )),
+
+                              DataCell(Text(
+                                data['helmetID'].toString(),
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              )),
+
+                              // Approve Zones - Join array into a comma-separated string
+                              DataCell(Text(
+                                data['intersection'] != null &&
+                                        data['intersection'] is List
+                                    ? (data['intersection'] as List).join(', ')
+                                    : 'N/A',
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              )),
+
+                              // Approve Zones - Join array into a comma-separated string
+                              DataCell(ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 300,
+                                ),
+                                child: Text(
+                                  data['approveZones'] != null &&
+                                          data['approveZones'] is List
+                                      ? (data['approveZones'] as List)
+                                          .join(', ')
+                                      : 'N/A',
+                                  style: const TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                              )),
+
+                              // Book In Time - Convert Timestamp to readable date
+                              DataCell(Text(
+                                bookInTime,
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              )),
+
+                              // Book Out Time - Check if null, else convert to readable date
+                              DataCell(Text(
+                                bookOutTime,
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.white),
+                              )),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+                }),
+            const SizedBox(height: 200),
+          ],
+        ),
       ),
     );
   }

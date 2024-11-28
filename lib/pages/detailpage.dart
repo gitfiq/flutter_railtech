@@ -26,6 +26,7 @@ class DetailpageState extends State<Detailpage> {
 
   late UnauthorizedDetectionService detectionService;
   String _helmetID = '';
+  String _name = '';
   String _intersection = '';
   String _zoneName = '';
 
@@ -40,9 +41,10 @@ class DetailpageState extends State<Detailpage> {
     // Initialize the detection service and start monitoring
     detectionService = UnauthorizedDetectionService(
       context: context,
-      onUnauthorizedDetected: (helmetID, intersection, zoneName) {
+      onUnauthorizedDetected: (helmetID, name, intersection, zoneName) {
         setState(() {
           _helmetID = helmetID;
+          _name = name;
           _intersection = intersection;
           _zoneName = zoneName;
         });
@@ -70,7 +72,7 @@ class DetailpageState extends State<Detailpage> {
     final String prefix = stationName.substring(0, 2);
     switch (prefix) {
       case 'EW':
-        return 'images/eastwest.jpg';
+        return 'images/pasirtamp.jpg';
       case 'NS':
         return 'images/northsouth.jpg';
       case 'NE':
@@ -110,7 +112,7 @@ class DetailpageState extends State<Detailpage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          "MRT Maintanance Monitoring System",
+          "TrackSafe System",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
@@ -118,10 +120,11 @@ class DetailpageState extends State<Detailpage> {
           color: Colors.white,
         ),
       ),
+      backgroundColor: const Color.fromARGB(255, 39, 145, 232),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 40),
             StreamBuilder<Map<String, dynamic>>(
               stream: detectionService.unauthorizedStream,
               builder: (context, snapshot) {
@@ -147,6 +150,7 @@ class DetailpageState extends State<Detailpage> {
                         // Return each alert as a CustomAlertWidget (or whatever widget you're using)
                         return CustomAlertWidget(
                           helmetID: alert['helmetID'],
+                          name: alert['name'],
                           intersection: alert['intersection'],
                           zoneName: alert['zoneName'],
                         );
@@ -158,15 +162,26 @@ class DetailpageState extends State<Detailpage> {
                 }
               },
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 10),
+            Center(
+              child: Text(
+                "SMRT Map (${removePrefix(widget.stationName)})",
+                style: const TextStyle(
+                  fontSize: 40,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
             Center(
               child: GestureDetector(
                 onTap: () {
                   showEnlargedImage(context, _getImagePath(widget.stationName));
                 },
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.55,
-                  width: MediaQuery.of(context).size.width * 0.40,
+                  height: MediaQuery.of(context).size.height * 0.40,
+                  width: MediaQuery.of(context).size.width * 0.25,
                   child: Container(
                       decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.0),
@@ -180,16 +195,16 @@ class DetailpageState extends State<Detailpage> {
               ),
             ),
             const SizedBox(height: 20),
-            Center(
+            const Center(
               child: Text(
-                removePrefix(widget.stationName),
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
+                "Track Status",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             StreamBuilder<List<String>>(
               stream: _firestoreService.getZoneNames(widget.stationName),
               builder: (context, snapshot) {
@@ -222,13 +237,13 @@ class DetailpageState extends State<Detailpage> {
                         return SizedBox(
                           height: 60,
                           child: buildRoundedButton(
-                            width: MediaQuery.of(context).size.width * 0.14,
-                            color: Colors.black,
-                            label: zone, // Use zone name as label
-                            onPressed: () {
-                              _selectZone(zone);
-                            },
-                          ),
+                              width: MediaQuery.of(context).size.width * 0.15,
+                              color: const Color.fromARGB(255, 76, 195, 255),
+                              label: zone, // Use zone name as label
+                              onPressed: () {
+                                _selectZone(zone);
+                              },
+                              fontsize: 18),
                         );
                       }).toList(),
                     ),
@@ -236,21 +251,25 @@ class DetailpageState extends State<Detailpage> {
                 }
               },
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             Text(
               selectedZone ?? 'Select a Zone',
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 30),
             Text(
-              showOnTrack ? 'On the Track' : 'Not On the Track',
+              showOnTrack
+                  ? 'Personnel on the Track'
+                  : 'Personnel left the Track',
               style: TextStyle(
                 fontSize: 25,
-                color: showOnTrack ? Colors.green : Colors.red,
+                color: showOnTrack
+                    ? const Color.fromARGB(255, 5, 135, 9)
+                    : Colors.red,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -263,7 +282,7 @@ class DetailpageState extends State<Detailpage> {
                   width: MediaQuery.of(context).size.width * 0.14,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color.fromARGB(255, 5, 135, 9),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -276,8 +295,8 @@ class DetailpageState extends State<Detailpage> {
                       });
                     },
                     child: const Text(
-                      'On Track',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      'Personnel on the Track',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                 ),
@@ -300,8 +319,8 @@ class DetailpageState extends State<Detailpage> {
                       });
                     },
                     child: const Text(
-                      'Not On Track',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      'Personnel left the Track',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ),
                 ),
@@ -331,21 +350,35 @@ class DetailpageState extends State<Detailpage> {
                     columns: const [
                       DataColumn(
                           label: Text(
+                        'Personnel Name',
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )),
+                      DataColumn(
+                          label: Text(
                         'Helmet ID',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       )),
                       DataColumn(
                           label: Text(
                         'Entry Time',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       )),
                       DataColumn(
                           label: Text(
                         'Exit Time',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       )),
                     ],
                     rows: document.map((doc) {
@@ -353,19 +386,29 @@ class DetailpageState extends State<Detailpage> {
                       // Convert Timestamp to DateTime and format it
                       final entryTime = formatTimestamp(data['entryTime']);
                       final exitTime = formatTimestamp(data['exitTime']);
+                      final name =
+                          doc['name'] ?? 'Unknown'; // Safely handle null names
 
                       return DataRow(cells: [
                         DataCell(Text(
+                          name,
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
+                        )),
+                        DataCell(Text(
                           doc['documentName'],
-                          style: const TextStyle(fontSize: 15),
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
                         )),
                         DataCell(Text(
                           entryTime,
-                          style: const TextStyle(fontSize: 15),
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
                         )),
                         DataCell(Text(
                           data['onTrack'] == true ? 'N/A' : exitTime,
-                          style: const TextStyle(fontSize: 15),
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.white),
                         )),
                       ]);
                     }).toList(),
